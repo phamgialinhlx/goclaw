@@ -64,6 +64,10 @@ export const credentialsSchema: Record<string, FieldDef[]> = {
   whatsapp: [
     { key: "bridge_url", label: "Bridge URL", type: "text", required: true, placeholder: "http://bridge:3000" },
   ],
+  mattermost: [
+    { key: "server_url", label: "Server URL", type: "text", required: true, placeholder: "https://mm.example.com", help: "Mattermost server URL" },
+    { key: "token", label: "Personal Access Token", type: "password", required: true, help: "Bot account personal access token" },
+  ],
 };
 
 // --- Config schemas ---
@@ -144,6 +148,18 @@ export const configSchema: Record<string, FieldDef[]> = {
     { key: "dm_policy", label: "DM Policy", type: "select", options: dmPolicyOptions, defaultValue: "pairing" },
     { key: "group_policy", label: "Group Policy", type: "select", options: groupPolicyOptions, defaultValue: "pairing" },
     { key: "allow_from", label: "Allowed Users", type: "tags", help: "WhatsApp user IDs" },
+    { key: "block_reply", label: "Block Reply", type: "select", options: blockReplyOptions, defaultValue: "inherit", help: "Deliver intermediate text during tool iterations" },
+  ],
+  mattermost: [
+    { key: "dm_policy", label: "DM Policy", type: "select", options: dmPolicyOptions, defaultValue: "pairing", help: "How to handle direct messages from unknown users" },
+    { key: "group_policy", label: "Group Policy", type: "select", options: groupPolicyOptions, defaultValue: "pairing", help: "How to handle messages from channels/groups" },
+    { key: "require_mention", label: "Require @mention in channels", type: "boolean", defaultValue: true, help: "Bot only responds when explicitly @mentioned in channels" },
+    { key: "history_limit", label: "Group History Limit", type: "number", defaultValue: 50, help: "Max pending group messages for context (0 = disabled)" },
+    { key: "dm_stream", label: "DM Streaming", type: "boolean", defaultValue: false, help: "Progressively edit placeholder message as LLM generates (DMs)" },
+    { key: "group_stream", label: "Group Streaming", type: "boolean", defaultValue: false, help: "Progressively edit placeholder message as LLM generates (channels)" },
+    { key: "thread_ttl", label: "Thread Participation TTL (hours)", type: "number", defaultValue: 24, help: "Hours before bot stops auto-replying in threads it participated in. 0 = always require @mention." },
+    { key: "reaction_level", label: "Reaction Level", type: "select", options: [{ value: "off", label: "Off" }, { value: "minimal", label: "Minimal (thinking + done)" }, { value: "full", label: "Full (all status emoji)" }], defaultValue: "off", help: "Show emoji reactions on user messages during agent processing" },
+    { key: "allow_from", label: "Allowed Users", type: "tags", help: "Mattermost user IDs allowed to interact; empty = no allowlist filter" },
     { key: "block_reply", label: "Block Reply", type: "select", options: blockReplyOptions, defaultValue: "inherit", help: "Deliver intermediate text during tool iterations" },
   ],
 };

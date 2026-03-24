@@ -20,6 +20,7 @@ type ChannelsConfig struct {
 	Zalo              ZaloConfig               `json:"zalo"`
 	ZaloPersonal      ZaloPersonalConfig       `json:"zalo_personal"`
 	Feishu            FeishuConfig             `json:"feishu"`
+	Mattermost        MattermostConfig         `json:"mattermost"`
 	PendingCompaction *PendingCompactionConfig `json:"pending_compaction,omitempty"` // global pending message compaction settings
 }
 
@@ -157,6 +158,23 @@ type ZaloPersonalConfig struct {
 	HistoryLimit    int                 `json:"history_limit,omitempty"`    // max pending group messages for context (default 50, 0=disabled)
 	CredentialsPath string              `json:"credentials_path,omitempty"` // path to saved cookies JSON
 	BlockReply      *bool               `json:"block_reply,omitempty"`      // override gateway block_reply (nil = inherit)
+}
+
+type MattermostConfig struct {
+	Enabled        bool                `json:"enabled"`
+	ServerURL      string              `json:"server_url"`                    // Mattermost server URL (e.g. "https://mm.example.com")
+	Token          string              `json:"token"`                         // Bot personal access token
+	AllowFrom      FlexibleStringSlice `json:"allow_from"`
+	DMPolicy       string              `json:"dm_policy,omitempty"`           // "pairing" (default), "allowlist", "open", "disabled"
+	GroupPolicy    string              `json:"group_policy,omitempty"`        // "open" (default), "allowlist", "disabled"
+	RequireMention *bool               `json:"require_mention,omitempty"`     // require @bot mention in channels (default true)
+	HistoryLimit   int                 `json:"history_limit,omitempty"`       // max pending group messages for context (default 50, 0=disabled)
+	DMStream       *bool               `json:"dm_stream,omitempty"`           // enable streaming for DMs (default false)
+	GroupStream    *bool               `json:"group_stream,omitempty"`        // enable streaming for groups (default false)
+	ReactionLevel  string              `json:"reaction_level,omitempty"`      // "off" (default), "minimal", "full"
+	BlockReply     *bool               `json:"block_reply,omitempty"`         // override gateway block_reply (nil = inherit)
+	ThreadTTL      *int                `json:"thread_ttl,omitempty"`          // hours before thread participation expires (default 24, 0=disabled)
+	MediaMaxBytes  int64               `json:"media_max_bytes,omitempty"`     // max media download size in bytes (default 20MB)
 }
 
 type FeishuConfig struct {

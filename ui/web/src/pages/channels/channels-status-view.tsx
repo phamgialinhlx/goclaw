@@ -16,6 +16,7 @@ const channelTypeLabels: Record<string, string> = {
   zalo_oa: "Zalo OA",
   zalo_personal: "Zalo Personal",
   whatsapp: "WhatsApp",
+  mattermost: "Mattermost",
 };
 
 export { channelTypeLabels };
