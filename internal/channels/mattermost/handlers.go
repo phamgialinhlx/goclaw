@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"slices"
 	"strings"
 	"time"
 
@@ -91,7 +92,7 @@ func (c *Channel) handlePosted(ctx context.Context, event *model.WebSocketEvent)
 
 	// Mention gating in groups (with thread participation cache)
 	if !isDM && c.requireMention {
-		mentioned := c.isBotMentioned(content)
+		mentioned := c.isBotMentioned(&post)
 
 		// Thread participation cache
 		if !mentioned && rootID != "" && c.threadTTL > 0 {
@@ -189,9 +190,21 @@ func (c *Channel) handlePosted(ctx context.Context, event *model.WebSocketEvent)
 	}
 }
 
-// isBotMentioned checks if the message text contains @botUsername.
-func (c *Channel) isBotMentioned(text string) bool {
-	return strings.Contains(text, "@"+c.botUsername)
+// isBotMentioned checks if the post mentions the bot, either via the
+// structured props.mentions array (populated by Mattermost's autocomplete)
+// or by a plain @username text match (typed manually).
+func (c *Channel) isBotMentioned(post *model.Post) bool {
+	// Check structured mentions first (reliable — set by Mattermost server)
+	if mentions, ok := post.GetProp("mentions").(string); ok && mentions != "" {
+		var ids []string
+		if err := json.Unmarshal([]byte(mentions), &ids); err == nil {
+			if slices.Contains(ids, c.botUserID) {
+				return true
+			}
+		}
+	}
+	// Fallback: plain text @username match (manual typing, API posts)
+	return strings.Contains(post.Message, "@"+c.botUsername)
 }
 
 // stripBotMention removes @botUsername from message text.
